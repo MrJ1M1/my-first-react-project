@@ -1,30 +1,25 @@
-import { Component } from "react";
+import { useState } from "react";
 import "./app-search-bar.css"
 
-class AppSearchBar extends Component{
+const AppSearchBar = props => {
+  const [term, setTerm] = useState('')
 
-  constructor(props){
-    super(props)
-    this.state = {term: ''}
-  }
+  const onTermHandler = e =>{
+    const term = e.target.value.toLowerCase()
+    setTerm(term)
+    props.updateTermHandler(term)
+  } 
 
-  onTermHandler = e => {
-    const term = e.target.value.toLowerCase();
-    this.setState({ term });
-    this.props.updateTermHandler(term);
-  }
+  return (
+    <input 
+      type="text"   
+      className="form-control search-input" 
+      placeholder="Kinolarni qidirish  ....." 
+      onChange={onTermHandler}
+      value={term}  
+    />
+  )
 
-  render(){
-    return (
-        <input 
-          type="text"   
-          className="form-control search-input" 
-          placeholder="Kinolarni qidirish  ....." 
-          onChange={this.onTermHandler}
-          value={this.state.term}  
-        />
-    )
-  }
 }
 
 export default AppSearchBar;
