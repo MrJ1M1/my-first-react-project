@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from 'uuid';
 import "./app.css"
 
@@ -9,13 +9,16 @@ import MovieList from "../movie-list/movie-list"
 import MovieAddForm from "../movies-add-form/movies-add-form"
 
 const App = () => {
-    const [data, setData] = useState([
-        {id: 1, name: "Empire of Osman", viewers: 786, favourite: false, like: false},
-        {id: 2, name: "Ertugrul", viewers: 987, favourite: false, like: true},
-        {id: 3, name: "Omar", viewers: 932, favourite: true, like: false}
-    ])
+    const [data, setData] = useState([])
     const [term, setTerm] = useState('')
     const [filter, setFilter] = useState('all')
+    const [isLoading, setIsLoading] = useState(false)
+
+
+
+
+
+
 
     const onDelete = id => {
         const newArr = data.filter(c => c.id !== id)
@@ -50,7 +53,7 @@ const App = () => {
             case "popular":
                 return arr.filter(c => c.like)
             case "mostViwers": 
-                return arr.filter(c => c.viewers > 800)
+                return arr.filter(c => c.viewers >= 800)
             default:
                 return arr 
         }
@@ -60,6 +63,24 @@ const App = () => {
 
     const updateFilterHandler = filter => setFilter(filter)
 
+    useEffect( () => {
+        setIsLoading(true)
+        fetch('https://jsonplaceholder.typicode.com/todos?_limit=10')
+            .then(response => response.json())
+            .then(json => {
+                const newArr = json.map(item => ({
+                    name: item.title,
+                    id: item.id,
+                    viewers: item.id * 200,
+                    favourite: false,
+                    like: false
+                }))
+                setData(newArr)
+            })
+            .catch(err => console.log(err))
+            .finally(setIsLoading(false))
+    }, [])
+
     return(
         <div className='app font-monospace'>
             <div className="content">
@@ -68,6 +89,7 @@ const App = () => {
                     <AppSearchBar updateTermHandler={updateTermHandler}/>
                     <AppFilter filter={filter} updateFilterHandler={updateFilterHandler}/>
                 </div>
+                {isLoading && 'Loading...'}
                 <MovieList onToggleProp={onToggleProp} data={filterHandler(searchHandler(data, term), filter)} onDelete={onDelete}/>
                 <MovieAddForm addForm={addForm}/>
             </div>
