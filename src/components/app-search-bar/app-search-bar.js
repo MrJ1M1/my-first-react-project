@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Context } from "../../context";
 import "./app-search-bar.css"
 
 const AppSearchBar = props => {
   const [term, setTerm] = useState('')
 
+  const {_, dispatch} = useContext(Context)
+
+
   const onTermHandler = e =>{
     const term = e.target.value.toLowerCase()
     setTerm(term)
-    props.updateTermHandler(term)
+    dispatch({type: "ON_TERM", payload: term})
   } 
 
   return (
